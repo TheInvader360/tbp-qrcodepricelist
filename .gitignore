@@ -1,0 +1,7 @@
+# Ignore all dotfiles except .gitignore
+.*
+!.gitignore
+
+# Ignore listed dirs
+bin
+build

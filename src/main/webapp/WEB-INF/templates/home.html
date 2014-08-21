@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Home</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <h3>Select Products to feature on Price List</h3>
+    <form action="#" th:action="@{/form}" th:object="${fbb}" method="post">
+      <fieldset>
+        <table>
+          <tr th:each="product, stat:*{products}">
+            <td th:text="${product.name}"></td>
+            <td><input type="checkbox" class="checkbox" th:field="*{products[__${stat.index}__].selected}" /></td>
+          </tr>
+        </table>
+        <br />
+        Warehouse:
+        <select th:field="*{warehouse}">
+          <option value="023">023</option>
+          <option value="037">037</option>
+          <option value="151">151</option>
+        </select>
+      </fieldset>
+      <br />
+      <input type="submit" value="Generate PDF Price List" />
+      <p />
+    </form>
+  </body>
+</html>
