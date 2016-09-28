@@ -49,6 +49,7 @@ public class WebController {
   @RequestMapping(value = "/form", method = RequestMethod.POST)
   public ModelAndView processForm(@ModelAttribute("fbb") FormBackingBean fbb) throws Exception {
     PriceList priceList = new PriceList();
+    priceList.setQRBytes(qrService.getBytes("http://www.tbp.co.uk/" + fbb.getWarehouse(), 200));
     for (Product product: fbb.getProducts()) {
       if (product.getSelected()) {
         priceList.addItem(buildPriceListItem(fbb.getWarehouse(), product.getSku(), product.getPrice(), product.getRrp(), product.getName()));

@@ -26,7 +26,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class PriceListPdfView extends AbstractPdfView {
 
-  private static final double ABSOLUTE_MAX_ITEMS_PER_PAGE = 10;
+  private static final double ABSOLUTE_MAX_ITEMS_PER_PAGE = 8;
+  private static final int HEADER_ROW_HEIGHT_MULIPLIER = 2;
   private static final Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD, Color.BLACK);
   private static final Font rrpLabelFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.GRAY);
   private static final Font rrpValueFont = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.STRIKETHRU, Color.GRAY);
@@ -47,18 +48,22 @@ public class PriceListPdfView extends AbstractPdfView {
     for (int i=1; i<=pageCount; i++) {
       int itemCount = (int) Math.min(calculatedMaxItemsPerPage, itemsToAdd.size());
       List<PriceListItem> pageItems = itemsToAdd.subList(0, itemCount);
-      createPage(doc, pageItems);
+      createPage(doc, priceList, pageItems);
       itemsToAdd.subList(0, itemCount).clear();
     }
   }
   
-  private void createPage(Document doc, List<PriceListItem> pageItems) throws DocumentException {
+  private void createPage(Document doc, PriceList priceList, List<PriceListItem> pageItems) throws DocumentException {
     PdfPTable table = new PdfPTable(5);
     table.setWidthPercentage(100.0f);
     table.setWidths(new float[] { 5.0f, 15.0f, 5.0f, 5.0f, 5.0f });
     
-    rowHeight = calculateRowHeight(doc, pageItems.size());
+    rowHeight = calculateRowHeight(doc, pageItems.size() + HEADER_ROW_HEIGHT_MULIPLIER);
+
     altRow = false;
+    addHeaderRow(table, priceList);
+    
+    altRow = !altRow;
     for (PriceListItem item : pageItems) {
       addPriceListRow(table, item);
       altRow = !altRow;
@@ -68,12 +73,19 @@ public class PriceListPdfView extends AbstractPdfView {
     doc.newPage();
   }
   
+  private void addHeaderRow(PdfPTable table, PriceList priceList) {
+    PdfPCell cell = buildQRCell(priceList.getQRBytes());
+    cell.setColspan(5);
+    cell.setFixedHeight(rowHeight * HEADER_ROW_HEIGHT_MULIPLIER);
+    table.addCell(cell);
+  }
+
   private void addPriceListRow(PdfPTable table, PriceListItem item) {
     table.addCell(buildImageCell(item));
     table.addCell(buildTitleCell(item));
     table.addCell(buildRrpCell(item));
     table.addCell(buildPriceCell(item));
-    table.addCell(buildQRCell(item));
+    table.addCell(buildQRCell(item.getQRBytes()));
   }
 
   private PdfPCell buildImageCell(PriceListItem item) {
@@ -111,9 +123,9 @@ public class PriceListPdfView extends AbstractPdfView {
     return cell;
   }
   
-  private PdfPCell buildQRCell(PriceListItem item) {
+  private PdfPCell buildQRCell(byte[] QRBytes) {
     Image image = null;
-    try {image = Image.getInstance(item.getQRBytes());} catch (Exception e) {}
+    try {image = Image.getInstance(QRBytes);} catch (Exception e) {}
     return formattedImageCell(image);
   }
   

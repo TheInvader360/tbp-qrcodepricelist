@@ -1,6 +1,7 @@
 # Ignore all dotfiles except .gitignore
 .*
 !.gitignore
+!.gitkeep
 
 # Ignore listed dirs
 bin

@@ -10,8 +10,6 @@ Setup
 1. Terminal:
 
   * git clone https://github.com/TheInvader360/tbp-qrcodepricelist.git
-  * cd tbp-qrcodepricelist
-  * mkdir -p src/main/resources/templates
 
 2. STS:
 
